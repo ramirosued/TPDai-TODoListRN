@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, FlatList, Alert, View } from 'react-native';
-import Titulo from './components/Titulo'; // Ajusta la ruta según tu estructura de carpetas
-import Form from './components/Form';     // Ajusta la ruta según tu estructura de carpetas
-import Tarea from './components/Tarea';   // Ajusta la ruta según tu estructura de carpetas
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, FlatList, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Titulo from './components/Titulo';
+import Form from './components/Form';
+import Tarea from './components/Tarea';
 
 export default function App() {
   const [tareas, setTareas] = useState([]);
 
+  useEffect(() => {
+    const cargarTareas = async () => {
+      try {
+        const tareasAlmacenadas = await AsyncStorage.getItem('tareas');
+        if (tareasAlmacenadas !== null) {
+          setTareas(JSON.parse(tareasAlmacenadas));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    cargarTareas();
+  }, []);
+
+  useEffect(() => {
+    const guardarTareas = async () => {
+      try {
+        await AsyncStorage.setItem('tareas', JSON.stringify(tareas));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    guardarTareas();
+  }, [tareas]);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Titulo />
+      <Titulo style={styles.titulo} />
 
       <Form tareas={tareas} setTareas={setTareas} />
 
@@ -21,6 +49,7 @@ export default function App() {
             setTareas={setTareas}
             id={item.id}
             texto={item.texto}
+            descripcion={item.descripcion} 
             tiempo={item.tiempo}
             completada={item.completada}
           />
@@ -37,4 +66,8 @@ const styles = StyleSheet.create({
     marginTop: 50,
     padding: 20,
   },
+  titulo: {
+    display: 'flex',
+    justifyContent: 'center'
+  }
 });

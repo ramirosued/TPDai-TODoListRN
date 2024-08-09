@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, TouchableOpacity, Alert } from 'react-native';
+import tacho from '../assets/tacho.png';
 
-const Tarea = ({ id, texto, tiempo, completada, tareas, setTareas }) => {
-  const [tachado, setTachado] = useState(true); // Inicializa el estado basado en la prop completada
+const Tarea = ({ id, texto, descripcion, tiempo, completada, tareas, setTareas }) => {
+  const [tachado, setTachado] = useState(completada);
 
   const eliminarTarea = () => {
     Alert.alert(
@@ -23,12 +24,11 @@ const Tarea = ({ id, texto, tiempo, completada, tareas, setTareas }) => {
     );
   };
 
-let tiempoTomado = 0;
+  let tiempoTomado = 0;
   const tacharTarea = () => {
-    setTachado(!tachado)
+    setTachado(!tachado);
     if (!tachado) {
-      // Si la tarea no está tachada, la tachamos y actualizamos el tiempo
-      tiempoTomado= Date.now() - id; // Calcula el tiempo desde que se marcó
+      tiempoTomado = Date.now() - id;
       setTareas(
         tareas.map(t =>
           t.id === id
@@ -37,7 +37,6 @@ let tiempoTomado = 0;
         )
       );
     } else {
-      // Si la tarea ya está tachada, la desmarcamos y reiniciamos el tiempo
       setTachado(false);
       setTareas(
         tareas.map(t =>
@@ -55,11 +54,15 @@ let tiempoTomado = 0;
         <Text style={[styles.title, tachado && styles.tachado]}>
           {texto}
         </Text>
+        <Text style={styles.descripcion}>
+          {descripcion}  
+
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={eliminarTarea} style={styles.button}>
         <Image
           style={styles.image}
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1214/1214594.png' }}
+          source={tacho}
         />
       </TouchableOpacity>
     </View>
@@ -83,6 +86,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  descripcion: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 4,
+  },
   tachado: {
     textDecorationLine: 'line-through',
     color: 'gray',
@@ -91,8 +99,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   image: {
-    width: 24,
-    height: 24,
+    width: 35,
+    height: 35,
   },
 });
 
